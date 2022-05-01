@@ -10,7 +10,7 @@ import (
 )
 
 func Config(router *mux.Router) {
-	logger := log.New(os.Stdout, "router (default)", log.LstdFlags)
+	logger := log.New(os.Stdout, "router (default) ", log.LstdFlags)
 
 	getRouter := router.Methods(http.MethodPost).Subrouter()
 
