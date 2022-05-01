@@ -8,6 +8,7 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/Gprisco/decanto-golang/env"
 	"github.com/Gprisco/decanto-golang/routers"
 	"github.com/gorilla/mux"
 )
@@ -19,8 +20,10 @@ func main() {
 
 	routers.Config(r)
 
+	config := env.GetInstance()
+
 	s := &http.Server{
-		Addr:         ":9090",
+		Addr:         config.Port,
 		Handler:      r,
 		IdleTimeout:  120 * time.Second,
 		ReadTimeout:  1 * time.Second,
