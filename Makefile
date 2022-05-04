@@ -1,4 +1,4 @@
 SHELL=/bin/sh
 
 run:
-	nodemon --exec "go run" main.go
+	nodemon --exec "go run" --signal SIGTERM main.go
