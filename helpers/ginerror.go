@@ -1,11 +1,10 @@
 package helpers
 
-import (
-	"net/http"
+import "github.com/gin-gonic/gin"
 
-	"github.com/gin-gonic/gin"
-)
-
-func HandleGenericError(c *gin.Context, err error) {
-	c.JSON(http.StatusInternalServerError, err)
+func CheckForError(c *gin.Context, err error) {
+	// Personalizable by using the gin Context to take some more actions other than panic
+	if err != nil {
+		panic(err)
+	}
 }
