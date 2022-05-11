@@ -9,8 +9,11 @@ import (
 func main() {
 	r := gin.Default()
 
-	r.GET("/", handlers.GetCountries)
-	r.GET("/:countryId", handlers.GetCountry)
+	r.GET("/country", handlers.GetCountries)
+	r.GET("/country/:countryId", handlers.GetCountry)
+
+	r.GET("/region", handlers.GetRegions)
+	r.GET("/region/:regionId", handlers.GetRegion)
 
 	r.Run(env.GetInstance().Port)
 }
