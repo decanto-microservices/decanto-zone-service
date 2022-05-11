@@ -12,7 +12,7 @@ var lock = &sync.Mutex{}
 
 var singleton *gorm.DB
 
-func GetDB() *gorm.DB {
+func GetInstance() *gorm.DB {
 	if singleton == nil {
 		lock.Lock()
 		defer lock.Unlock()

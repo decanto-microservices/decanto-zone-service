@@ -9,9 +9,8 @@ import (
 func main() {
 	r := gin.Default()
 
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(200, handlers.GetCountries())
-	})
+	r.GET("/", handlers.GetCountries)
+	r.GET("/:countryId", handlers.GetCountry)
 
 	r.Run(env.GetInstance().Port)
 }

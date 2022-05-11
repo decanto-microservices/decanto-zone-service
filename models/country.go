@@ -1,8 +1,8 @@
 package models
 
 type Country struct {
-	CountryId int    `gorm:"column:countryId;primarykey"`
-	Country   string `gorm:"column:country"`
+	CountryId int    `gorm:"column:countryId;primarykey" json:"countryId"`
+	Country   string `gorm:"column:country" json:"country"`
 }
 
 func (Country) TableName() string {
