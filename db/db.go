@@ -1,30 +1,33 @@
 package db
 
 import (
+	"context"
 	"sync"
 
 	"github.com/Gprisco/decanto-zone-service/env"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 var lock = &sync.Mutex{}
 
-var singleton *gorm.DB
+var singleton *mongo.Database
 
-func GetInstance() *gorm.DB {
+func GetInstance() *mongo.Database {
 	if singleton == nil {
 		lock.Lock()
 		defer lock.Unlock()
 
 		if singleton == nil {
-			db, err := gorm.Open(mysql.Open(env.GetInstance().DSN))
+			uri := env.GetInstance().DSN
+
+			client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
 
 			if err != nil {
-				panic("Failed to connect to db")
+				panic(err)
 			}
 
-			singleton = db
+			singleton = (client.Database(env.GetInstance().DB))
 		}
 	}
 

@@ -8,12 +8,13 @@ import (
 
 func main() {
 	r := gin.Default()
+	baseUrl := env.GetInstance().BaseURL
 
-	r.GET("/country", handlers.GetCountries)
-	r.GET("/country/:countryId", handlers.GetCountry)
+	r.GET(baseUrl+"/country", handlers.GetCountries)
+	r.GET(baseUrl+"/country/:countryId", handlers.GetCountry)
 
-	r.GET("/region", handlers.GetRegions)
-	r.GET("/region/:regionId", handlers.GetRegion)
+	r.GET(baseUrl+"/region", handlers.GetRegions)
+	r.GET(baseUrl+"/region/:regionId", handlers.GetRegion)
 
 	r.Run(env.GetInstance().Port)
 }

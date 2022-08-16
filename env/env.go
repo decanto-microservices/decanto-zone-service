@@ -11,8 +11,10 @@ import (
 var lock = &sync.Mutex{}
 
 type Config struct {
-	Port string
-	DSN  string
+	Port    string
+	DSN     string
+	DB      string
+	BaseURL string
 }
 
 func newConfig() *Config {
@@ -23,13 +25,14 @@ func newConfig() *Config {
 	// ----- SET Values -----
 	config.Port = os.Getenv("PORT")
 	config.DSN = fmt.Sprintf(
-		"%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True",
-		os.Getenv("DB_USER"),
-		os.Getenv("DB_PASS"),
-		os.Getenv("DB_ADDR"),
-		os.Getenv("DB_PORT"),
-		os.Getenv("DB_NAME"),
+		"mongodb://%s:%s@%s:%s/?retryWrites=true&w=majority",
+		os.Getenv("MONGO_USER"),
+		os.Getenv("MONGO_PASS"),
+		os.Getenv("MONGO_ADDR"),
+		os.Getenv("MONGO_PORT"),
 	)
+	config.DB = os.Getenv("MONGO_DB")
+	config.BaseURL = os.Getenv("BASE_URL")
 
 	return config
 }
