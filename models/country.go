@@ -1,10 +1,12 @@
 package models
 
+import (
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
+
 type Country struct {
-	CountryId int    `gorm:"column:countryId;primarykey" json:"countryId"`
-	Country   string `gorm:"column:country" json:"country"`
+	ID      primitive.ObjectID `bson:"_id" json:"_id"`
+	Country string             `json:"country"`
 }
 
-func (Country) TableName() string {
-	return "g_countries"
-}
+var CountryCollection string = "g_countries"
