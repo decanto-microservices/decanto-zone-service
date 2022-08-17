@@ -11,10 +11,11 @@ import (
 var lock = &sync.Mutex{}
 
 type Config struct {
-	Port    string
-	DSN     string
-	DB      string
-	BaseURL string
+	Port      string
+	DSN       string
+	DB        string
+	BaseURL   string
+	ServiceID string
 }
 
 func newConfig() *Config {
@@ -33,6 +34,7 @@ func newConfig() *Config {
 	)
 	config.DB = os.Getenv("MONGO_DB")
 	config.BaseURL = os.Getenv("BASE_URL")
+	config.ServiceID = os.Getenv("SERVICE_ID")
 
 	return config
 }
