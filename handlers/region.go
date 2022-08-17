@@ -2,24 +2,23 @@ package handlers
 
 import (
 	"net/http"
-	"strconv"
 
-	"github.com/Gprisco/decanto-zone-service/helpers"
 	"github.com/Gprisco/decanto-zone-service/services"
 	"github.com/gin-gonic/gin"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func GetRegions(c *gin.Context) {
-	regions := services.GetRegions()
-	c.JSON(http.StatusOK, regions)
+	c.JSON(http.StatusOK, services.GetRegions())
 }
 
 func GetRegion(c *gin.Context) {
-	regionId, err := strconv.Atoi(c.Param("regionId"))
+	regionId, err := primitive.ObjectIDFromHex(c.Param("regionId"))
 
-	helpers.CheckForError(c, err)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, err.Error())
+		return
+	}
 
-	region := services.GetRegion(regionId)
-
-	c.JSON(http.StatusOK, region)
+	c.JSON(http.StatusOK, services.GetRegion(regionId))
 }

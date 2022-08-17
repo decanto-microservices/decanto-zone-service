@@ -27,7 +27,7 @@ func GetInstance() *mongo.Database {
 				panic(err)
 			}
 
-			singleton = (client.Database(env.GetInstance().DB))
+			singleton = client.Database(env.GetInstance().DB)
 		}
 	}
 
