@@ -1,4 +1,4 @@
-package services
+package consul
 
 import (
 	"fmt"
@@ -11,11 +11,7 @@ import (
 )
 
 func Register() {
-	config := consulapi.DefaultConfig()
-	consul, err := consulapi.NewClient(config)
-	if err != nil {
-		log.Println(err)
-	}
+	consul := GetInstance()
 
 	serviceID := env.GetInstance().ServiceID
 	port, _ := strconv.Atoi(env.GetInstance().Port[1:len(env.GetInstance().Port)])
