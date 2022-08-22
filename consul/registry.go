@@ -6,24 +6,25 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/Gprisco/decanto-zone-service/env"
 	consulapi "github.com/hashicorp/consul/api"
+	"github.com/joho/godotenv"
 )
 
 func Register() {
+	godotenv.Load(".env")
 	consul := GetInstance()
 
-	serviceID := env.GetInstance().ServiceID
-	port, _ := strconv.Atoi(env.GetInstance().Port[1:len(env.GetInstance().Port)])
+	serviceID := os.Getenv("SERVICE_ID")
+	port, _ := strconv.ParseInt(os.Getenv("PORT")[1:len(os.Getenv("PORT"))], 10, 64)
 	address, _ := os.Hostname()
 
 	registration := &consulapi.AgentServiceRegistration{
 		ID:      serviceID,
 		Name:    serviceID,
-		Port:    port,
+		Port:    int(port),
 		Address: address,
 		Check: &consulapi.AgentServiceCheck{
-			HTTP:     fmt.Sprintf("http://%s:%v/%s/check", address, port, env.GetInstance().BaseURL),
+			HTTP:     fmt.Sprintf("http://%s:%v/%s/check", address, port, os.Getenv("BASE_URL")),
 			Interval: "10s",
 			Timeout:  "30s",
 		},

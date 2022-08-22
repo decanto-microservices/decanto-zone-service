@@ -5,6 +5,7 @@ import (
 	"os"
 	"sync"
 
+	"github.com/Gprisco/decanto-zone-service/consul"
 	"github.com/joho/godotenv"
 )
 
@@ -23,16 +24,29 @@ func newConfig() *Config {
 
 	config := &Config{}
 
+	consul := consul.GetInstance()
+
+	mongoUserPair, _, err := consul.KV().Get("mongodb/user/root", nil)
+	mongoPassPair, _, err := consul.KV().Get("mongodb/user/root/password", nil)
+	mongoAddressPair, _, err := consul.KV().Get("mongodb/address", nil)
+	mongoPortPair, _, err := consul.KV().Get("mongodb/port", nil)
+	mongoDbPair, _, err := consul.KV().Get("mongodb/db", nil)
+
+	if err != nil {
+		panic(err)
+	}
+
 	// ----- SET Values -----
 	config.Port = os.Getenv("PORT")
 	config.DSN = fmt.Sprintf(
 		"mongodb://%s:%s@%s:%s/?retryWrites=true&w=majority",
-		os.Getenv("MONGO_USER"),
-		os.Getenv("MONGO_PASS"),
-		os.Getenv("MONGO_ADDR"),
-		os.Getenv("MONGO_PORT"),
+		string(mongoUserPair.Value),
+		string(mongoPassPair.Value),
+		string(mongoAddressPair.Value),
+		string(mongoPortPair.Value),
 	)
-	config.DB = os.Getenv("MONGO_DB")
+	config.DB = string(mongoDbPair.Value)
+
 	config.BaseURL = os.Getenv("BASE_URL")
 	config.ServiceID = os.Getenv("SERVICE_ID")
 
