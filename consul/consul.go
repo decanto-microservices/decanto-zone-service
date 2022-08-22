@@ -2,6 +2,7 @@ package consul
 
 import (
 	"log"
+	"os"
 	"sync"
 
 	consulapi "github.com/hashicorp/consul/api"
@@ -18,6 +19,9 @@ func GetInstance() *consulapi.Client {
 
 		if singleton == nil {
 			config := consulapi.DefaultConfig()
+
+			config.Address = os.Getenv("CONSUL_ADDR")
+
 			consul, err := consulapi.NewClient(config)
 
 			if err != nil {
