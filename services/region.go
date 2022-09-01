@@ -11,25 +11,36 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func GetRegions() []models.Region {
+func GetRegions(ids []primitive.ObjectID) []models.Region {
 	var regions []models.Region
 
-	lookup := bson.D{
-		{Key: "$lookup", Value: bson.D{
-			{Key: "from", Value: models.CountryCollection.Name()},
-			{Key: "localField", Value: "countryId"},
-			{Key: "foreignField", Value: "_id"},
-			{Key: "as", Value: "country"},
-		}},
+	aggregationPipeline := mongo.Pipeline{}
+
+	if len(ids) > 0 {
+		// If ids are specified, we append a match step in the aggregation pipeline
+		aggregationPipeline = append(aggregationPipeline, bson.D{
+			{Key: "$match", Value: bson.D{
+				{Key: "_id", Value: bson.D{{Key: "$in", Value: ids}}},
+			},
+			}})
 	}
 
-	unwind := bson.D{
+	// After matching our ids, we add the lookup step
+	aggregationPipeline = append(aggregationPipeline, bson.D{{Key: "$lookup", Value: bson.D{
+		{Key: "from", Value: models.CountryCollection.Name()},
+		{Key: "localField", Value: "countryId"},
+		{Key: "foreignField", Value: "_id"},
+		{Key: "as", Value: "country"},
+	}}})
+
+	// Lastly we add an unwind stage
+	aggregationPipeline = append(aggregationPipeline, bson.D{
 		{Key: "$unwind", Value: bson.D{
 			{Key: "path", Value: "$country"},
 		}},
-	}
+	})
 
-	cursor, err := models.RegionCollection.Aggregate(context.TODO(), mongo.Pipeline{lookup, unwind}, &options.AggregateOptions{})
+	cursor, err := models.RegionCollection.Aggregate(context.TODO(), aggregationPipeline, &options.AggregateOptions{})
 
 	if err != nil {
 		panic(err)

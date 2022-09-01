@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/Gprisco/decanto-zone-service/services"
 	"github.com/gin-gonic/gin"
@@ -9,7 +10,23 @@ import (
 )
 
 func GetRegions(c *gin.Context) {
-	c.JSON(http.StatusOK, services.GetRegions())
+	ids := c.Query("ids")
+	objectIds := []primitive.ObjectID{}
+
+	if ids != "" {
+		for _, id := range strings.Split(ids, ",") {
+			objectId, err := primitive.ObjectIDFromHex(string(id))
+
+			if err != nil {
+				c.JSON(http.StatusBadRequest, "The ids must be valid ObjectIDs")
+				return
+			}
+
+			objectIds = append(objectIds, objectId)
+		}
+	}
+
+	c.JSON(http.StatusOK, services.GetRegions(objectIds))
 }
 
 func GetRegion(c *gin.Context) {
