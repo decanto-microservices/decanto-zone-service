@@ -26,10 +26,7 @@ func newConfig() *Config {
 
 	consul := consul.GetInstance()
 
-	mongoUserPair, _, err := consul.KV().Get("mongodb/user/root", nil)
-	mongoPassPair, _, err := consul.KV().Get("mongodb/user/root/password", nil)
-	mongoAddressPair, _, err := consul.KV().Get("mongodb/address", nil)
-	mongoPortPair, _, err := consul.KV().Get("mongodb/port", nil)
+	mongoConnString, _, err := consul.KV().Get("mongodb/connection", nil)
 	mongoDbPair, _, err := consul.KV().Get("mongodb/db", nil)
 
 	if err != nil {
@@ -38,13 +35,7 @@ func newConfig() *Config {
 
 	// ----- SET Values -----
 	config.Port = os.Getenv("PORT")
-	config.DSN = fmt.Sprintf(
-		"mongodb://%s:%s@%s:%s/?retryWrites=true&w=majority",
-		string(mongoUserPair.Value),
-		string(mongoPassPair.Value),
-		string(mongoAddressPair.Value),
-		string(mongoPortPair.Value),
-	)
+	config.DSN = fmt.Sprintf(string(mongoConnString.Value))
 	config.DB = string(mongoDbPair.Value)
 
 	config.BaseURL = os.Getenv("BASE_URL")
