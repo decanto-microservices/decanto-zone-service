@@ -1,0 +1,67 @@
+# Ensure HTTP protocol to enable L7 traffic management
+apiVersion: consul.hashicorp.com/v1alpha1
+kind: ServiceDefaults
+metadata:
+  name: decanto-zone-service
+spec:
+  protocol: "http"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: decanto-zone-service
+spec:
+  selector:
+    app: decanto-zone-service
+  ports:
+    - name: http
+      protocol: TCP
+      port: 9090
+      targetPort: 9090
+
+---
+apiVersion: apps/v1
+
+kind: Deployment
+
+metadata:
+  name: decanto-zone-service-deployment
+
+  labels:
+    app: decanto-zone-service
+
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: decanto-zone-service
+
+  template:
+    metadata:
+      labels:
+        app: decanto-zone-service
+      annotations:
+        consul.hashicorp.com/connect-inject: "true"
+        consul.hashicorp.com/connect-service-upstreams: "consul-server.consul:8500,decanto-db.mongo.cosmos.azure.com:10255"
+
+    spec:
+      containers:
+        - name: decanto-zone-service
+
+          image: decanto-zone-service:latest
+          imagePullPolicy: IfNotPresent
+
+          ports:
+            - containerPort: 9090
+
+          env:
+            - name: CONSUL_ADDR
+              value: "consul-server.consul:8500"
+            - name: PORT
+              value: ":9090"
+            - name: BASE_URL
+              value: "decanto/zone"
+            - name: SERVICE_ID
+              value: "decanto-zone-service"
