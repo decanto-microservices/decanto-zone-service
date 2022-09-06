@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"crypto/tls"
 	"sync"
 
 	"github.com/Gprisco/decanto-zone-service/env"
@@ -21,7 +22,10 @@ func GetInstance() *mongo.Database {
 		if singleton == nil {
 			uri := env.GetInstance().DSN
 
-			client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri))
+			tlsConfig := tls.Config{
+				MinVersion: tls.VersionTLS12,
+			}
+			client, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(uri).SetTLSConfig(&tlsConfig))
 
 			if err != nil {
 				panic(err)
